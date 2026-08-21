@@ -119,8 +119,8 @@ async function screenshot(cdp, file, { full = true, clip = null } = {}) {
 }
 
 /**
- * Privacy pass for README captures: darken the panel backdrop so the
- * conversation behind it is unreadable, and mask every digit sequence
+ * Privacy pass for README captures: make the panel backdrop fully opaque so
+ * the conversation behind it is invisible, and mask every digit sequence
  * inside the balance card (account amounts) with "•".
  */
 async function redact(cdp) {
@@ -131,7 +131,7 @@ async function redact(cdp) {
     });
     if (overlay) {
       const backdrop = [...overlay.children].find((c) => c.style && c.style.position === "absolute");
-      if (backdrop) backdrop.style.background = "color-mix(in srgb, var(--dsw-alias-bg-base) 88%, transparent)";
+      if (backdrop) backdrop.style.background = "var(--dsw-alias-bg-base)";
     }
     const titles = [...document.querySelectorAll("div, span")].filter((el) => (el.textContent ?? "") === "账户余额" && el.children.length === 0);
     for (const t of titles) {
