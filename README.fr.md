@@ -2,6 +2,11 @@
 
 > 🌐 Languages: [中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · **Français** · [Deutsch](README.de.md)
 
+[![GitHub release](https://img.shields.io/github/v/release/woosh2010/dsh-usage-dashboard?label=release)](https://github.com/woosh2010/dsh-usage-dashboard/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/woosh2010/dsh-usage-dashboard?style=social)](https://github.com/woosh2010/dsh-usage-dashboard/stargazers)
+
+
 Ajoute, sous la zone de saisie de [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web (`dsh web`), un **dock de facturation heures pleines / heures creuses** : cliquez pour déployer un **tableau de bord d'analyse d'utilisation** complet. Les données de token / coût / modèle / heures pleines-creuses sont automatiquement persistées à travers les sessions, avec filtres globaux et graphiques multidimensionnels.
 
 ![Tableau de bord d'analyse d'utilisation](docs/screenshots/dashboard.png)

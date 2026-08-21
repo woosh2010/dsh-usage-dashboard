@@ -2,6 +2,11 @@
 
 > 🌐 Languages: [中文](README.md) · **English** · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md)
 
+[![GitHub release](https://img.shields.io/github/v/release/woosh2010/dsh-usage-dashboard?label=release)](https://github.com/woosh2010/dsh-usage-dashboard/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/woosh2010/dsh-usage-dashboard?style=social)](https://github.com/woosh2010/dsh-usage-dashboard/stargazers)
+
+
 Adds a **peak/off-peak billing dock** below the input box of the [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web (`dsh web`); click it to expand a complete **usage analysis dashboard**: token / cost / model / peak-off-peak data is persisted automatically across sessions, with global filters and multi-dimensional charts.
 
 ![Usage analysis dashboard](docs/screenshots/dashboard.png)

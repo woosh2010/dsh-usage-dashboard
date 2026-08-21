@@ -2,6 +2,11 @@
 
 > 🌐 Languages: [中文](README.md) · [English](README.en.md) · [日本語](README.ja.md) · **한국어** · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md)
 
+[![GitHub release](https://img.shields.io/github/v/release/woosh2010/dsh-usage-dashboard?label=release)](https://github.com/woosh2010/dsh-usage-dashboard/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/woosh2010/dsh-usage-dashboard?style=social)](https://github.com/woosh2010/dsh-usage-dashboard/stargazers)
+
+
 > 📷 참고: 스크린샷은 중국어 UI 기준으로 표시되어 있습니다.
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web(`dsh web`) 입력란 아래에 **피크/오프피크 과금 도크** 한 줄을 추가하고, 클릭하면 전체 **사용량 분석 대시보드**가 펼쳐집니다. 세션 전반의 토큰 / 비용 / 모델 / 피크·오프피크 데이터가 자동으로 저장되며, 전역 필터와 다차원 차트를 제공합니다.
