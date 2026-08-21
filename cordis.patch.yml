@@ -1,0 +1,9 @@
+# @deepseek-ai/dsh-client-ui-usage — bundle patch
+# Mounts this package as a Loader entry (`ui-usage`). Applied when the package
+# joins a profile's `dsh.profile.bundles` list (`dsh plugin --profile <name> add`
+# does that automatically for packages declaring `dsh.bundle.patch`).
+# If you also mount it by hand in the profile's own cordis.patch.yml, keep only
+# one of the two — a duplicate `ui-usage` row id would collide.
+- insert:
+    - id: ui-usage
+      name: '@deepseek-ai/dsh-client-ui-usage'
