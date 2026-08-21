@@ -1,12 +1,14 @@
 # dsh-client-ui-usage — DeepSeek Harness 用量分析插件
 
+> 🌐 Languages: **中文** · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Español](README.es.md) · [Français](README.fr.md) · [Deutsch](README.de.md)
+
 给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web（`dsh web`）输入框下方加一行**峰谷计费坞**，点击展开完整的**用量分析仪表盘**：跨会话的 token / 成本 / 模型 / 峰谷数据自动落盘，并提供全局筛选与多维图表。
 
 ![用量分析仪表盘](docs/screenshots/dashboard.png)
 
 ## 功能特性
 
-- **峰谷分时计费**：按北京时间峰时（9:00–12:00 / 14:00–18:00）与谷时（半价）计价；坞上实时显示当前时段、进度条、距下次调价倒计时、会话累计 / 本轮成本，以及当前会话模型与账户余额（60 秒自动刷新，走官方 `/user/balance` 代理，API Key 不出浏览器）。
+- **峰谷分时计费**：按北京时间峰时（9:00–12:00 / 14:00–18:00）与谷时（半价）计价；坞上实时显示当前时段、进度条、距下次调价倒计时、会话累计 / 本轮成本与账户余额（60 秒自动刷新，走官方 `/user/balance` 代理，API Key 不出浏览器）。
 
   ![折叠坞](docs/screenshots/dock.png)
 
