@@ -4,6 +4,10 @@
   "version": "0.4.0",
   "private": true,
   "type": "module",
+  "files": [
+    "lib",
+    "cordis.patch.yml"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/woosh2010/dsh-usage-dashboard.git"
