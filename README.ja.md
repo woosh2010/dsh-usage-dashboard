@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/woosh2010/dsh-usage-dashboard?style=social)](https://github.com/woosh2010/dsh-usage-dashboard/stargazers)
 
+![デモ](docs/demo.gif)
+
 
 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) の Web（`dsh web`）の入力欄の下に**ピーク/オフピーク課金ドック**を 1 行追加します。クリックすると完全な**用量分析ダッシュボード**が展開され、セッションをまたいだ token / コスト / モデル / ピーク・オフピークのデータが自動的に保存され、グローバルフィルターと多次元チャートを提供します。
 

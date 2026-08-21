@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/woosh2010/dsh-usage-dashboard?style=social)](https://github.com/woosh2010/dsh-usage-dashboard/stargazers)
 
+![演示](docs/demo.gif)
+
 
 给 [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) Web（`dsh web`）输入框下方加一行**峰谷计费坞**，点击展开完整的**用量分析仪表盘**：跨会话的 token / 成本 / 模型 / 峰谷数据自动落盘，并提供全局筛选与多维图表。
 

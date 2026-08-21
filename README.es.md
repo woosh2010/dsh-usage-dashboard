@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/woosh2010/dsh-usage-dashboard?style=social)](https://github.com/woosh2010/dsh-usage-dashboard/stargazers)
 
+![Demostración](docs/demo.gif)
+
 
 Añade un **dock de facturación por hora punta/valle** debajo del cuadro de entrada de la Web de [DeepSeek Harness](https://github.com/deepseek-ai/deepseek-harness) (`dsh web`); al hacer clic se expande el **panel de análisis de uso** completo: los datos de token / coste / modelo / punta-valle de todas las sesiones se guardan automáticamente en disco, con filtros globales y gráficos multidimensionales.
 

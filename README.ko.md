@@ -6,6 +6,8 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/woosh2010/dsh-usage-dashboard?style=social)](https://github.com/woosh2010/dsh-usage-dashboard/stargazers)
 
+![데모](docs/demo.gif)
+
 
 > 📷 참고: 스크린샷은 중국어 UI 기준으로 표시되어 있습니다.
 
