@@ -39,13 +39,19 @@
 > 需要 **pnpm**（`dsh plugin` 把参数原样转发给 pnpm，在 profile 目录里执行）。
 > 没有的话先装：`corepack enable pnpm`（Node 自带 corepack）或 `npm install -g pnpm`。
 
-先得到 tarball（仓库 Releases 下载，或在源码目录执行 `npm pack` 生成 `deepseek-ai-dsh-client-ui-usage-0.4.0.tgz`），然后在 tarball 所在目录执行：
+1. **下载安装包**（[Releases](https://github.com/woosh2010/dsh-usage-dashboard/releases) 里的 `deepseek-ai-dsh-client-ui-usage-0.4.0.tgz`，或用浏览器下载保存到本地）：
 
-```bash
-dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
-```
+   ```bash
+   curl -LO https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   ```
 
-> 注意路径前的 `./`（或写绝对路径）——直接写文件名会被 pnpm 当成 npm 包名去 registry 拉取。
+   也可以从源码自建：在仓库目录执行 `npm pack`，同样生成该 tgz。
+
+2. **安装**（在 tgz 所在目录执行，注意路径前的 `./` 或写绝对路径）：
+
+   ```bash
+   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   ```
 
 包声明了 `dsh.bundle.patch`，`dsh plugin` 会自动把 `@deepseek-ai/dsh-client-ui-usage` 写进 profile 的 `dsh.profile.bundles` 列表并挂载为 `ui-usage` 条目。然后重启 `dsh web` 并刷新浏览器。
 
