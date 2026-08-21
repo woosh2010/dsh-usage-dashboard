@@ -36,11 +36,20 @@
 
 ### 方式一：dsh 插件命令（推荐）
 
+> 需要 **pnpm**（`dsh plugin` 把参数原样转发给 pnpm，在 profile 目录里执行）。
+> 没有的话先装：`corepack enable pnpm`（Node 自带 corepack）或 `npm install -g pnpm`。
+
+先得到 tarball（仓库 Releases 下载，或在源码目录执行 `npm pack` 生成 `deepseek-ai-dsh-client-ui-usage-0.4.0.tgz`），然后在 tarball 所在目录执行：
+
 ```bash
-dsh plugin --profile web add deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
 ```
 
-包声明了 `dsh.bundle.patch`，`dsh plugin` 会自动把它写进 profile 的 bundles 列表并挂载为 `ui-usage` 条目。然后重启 `dsh web` 并刷新浏览器。
+> 注意路径前的 `./`（或写绝对路径）——直接写文件名会被 pnpm 当成 npm 包名去 registry 拉取。
+
+包声明了 `dsh.bundle.patch`，`dsh plugin` 会自动把 `@deepseek-ai/dsh-client-ui-usage` 写进 profile 的 `dsh.profile.bundles` 列表并挂载为 `ui-usage` 条目。然后重启 `dsh web` 并刷新浏览器。
+
+> **从方式二切换过来**：先删掉 `~/.dsh/profiles/web/cordis.patch.yml` 里手工添加的 `ui-usage` insert 行，否则 bundle patch 与手工 insert 的条目 id 会重复冲突。
 
 ### 方式二：手动安装
 
