@@ -1,7 +1,7 @@
 {
   "name": "@deepseek-ai/dsh-client-ui-usage",
-  "description": "Usage dashboard for the conversation composer dock: peak/valley pricing with period progress, live DeepSeek balance, cross-session usage history and analysis charts",
-  "version": "0.4.0",
+  "description": "Usage dashboard for the conversation composer dock: peak/valley pricing with period progress, live DeepSeek balance, cross-session usage history, analysis charts and by-date drill-down",
+  "version": "0.5.0",
   "private": true,
   "type": "module",
   "files": [

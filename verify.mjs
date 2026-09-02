@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Post-deploy verification for @deepseek-ai/dsh-client-ui-usage 0.4.0.
+ * Post-deploy verification for @deepseek-ai/dsh-client-ui-usage 0.5.0.
  * Run AFTER restarting `dsh web`:
  *   node verify.mjs [baseUrl]   (default http://127.0.0.1:3080)
  *
@@ -11,6 +11,7 @@
  *  4. `model` query param filters records
  *  5. `limit=20` caps the recent list at 20
  *  6. per-model mixes sum to the overall token mix
+ *  7. `day` drill-down returns 24 hourly buckets + per-session aggregates
  */
 import { readFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -36,6 +37,8 @@ check("summary.modelsAll present with per-model mix",
   Array.isArray(summary.modelsAll) && summary.modelsAll.every((m) => m.mix && typeof m.mix.input === "number"),
   summary.modelsAll?.map((m) => `${m.model}:${m.steps}`).join(", "));
 check("recent capped at 20", summary.recent.length <= 20, `got ${summary.recent.length}`);
+check("daysAvailable lists days with data", Array.isArray(summary.daysAvailable) && summary.daysAvailable.length > 0,
+  `got ${summary.daysAvailable?.length ?? 0} days`);
 
 // 3. session filter (use a session id actually present in recent/all data)
 const anySession = summary.modelsAll && summary.recent[0]?.sessionId;
@@ -70,6 +73,21 @@ const mixSum = (summary.modelsAll ?? []).reduce(
 check("modelsAll mixes sum to overall tokens",
   mixSum.input === total.input && mixSum.cacheRead === total.cacheRead && mixSum.cacheWrite === total.cacheWrite && mixSum.output === total.output,
   JSON.stringify({ mixSum, total }));
+
+// 7. day drill-down
+const daySample = summary.days?.[0]?.day;
+if (daySample) {
+  const day = (await (await fetch(`${BASE}/dsh-client-ui-usage/history/summary?since=0&limit=20&day=${encodeURIComponent(daySample)}`)).json()).value;
+  check("day drill-down returns 24 hourly buckets", Array.isArray(day.hours) && day.hours.length === 24, `day=${daySample}`);
+  const hourCost = (day.hours ?? []).reduce((acc, h) => acc + (h.cost || 0), 0);
+  const dayCost = (day.peak?.cost || 0) + (day.valley?.cost || 0);
+  check("hourly costs sum to the day cost", Math.abs(hourCost - dayCost) < 1e-6, `hours ${hourCost} vs day ${dayCost}`);
+  check("day drill-down scopes records to that day", day.inRange <= summary.inRange, `inRange ${day.inRange} vs ${summary.inRange}`);
+  check("day sessions aggregates present", Array.isArray(day.sessions) && day.sessions.every((s) => typeof s.sessionId === "string" && typeof s.cost === "number"));
+  check("drill-down day is marked in daysAvailable", Array.isArray(day.daysAvailable) && day.daysAvailable.includes(daySample), `day=${daySample}`);
+} else {
+  check("day drill-down (skipped: no day buckets in range)", true);
+}
 
 console.log(failed === 0 ? "\nALL CHECKS PASSED" : `\n${failed} CHECK(S) FAILED`);
 process.exit(failed === 0 ? 0 : 1);
