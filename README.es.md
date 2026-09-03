@@ -91,6 +91,72 @@ El paquete declara `dsh.bundle.patch`; `dsh plugin` escribe automáticamente `@d
 
 > Uso directo desde el directorio de código fuente: `lib/client.js` lo lee el servidor directamente del archivo, por lo que los cambios en el cliente se aplican al refrescar el navegador; los cambios en `lib/index.js` (rutas/almacenamiento del lado host) requieren reiniciar `dsh web`.
 
+## Preguntas frecuentes (solución de problemas)
+
+### `dsh web` no inicia con el error "declares no dsh.bundle" tras actualizar/instalar
+
+**Síntoma**: al reiniciar `dsh web` se produce el error:
+
+```
+profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its package.json
+```
+
+**Causas** (por frecuencia):
+
+1. **Una instalación antigua 0.1.x (declara solo `dsh.client`, sin `dsh.bundle`) está tapando la nueva versión.**
+   La v0.4.0 declara `dsh.bundle.patch`, por lo que registrarla en `bundles` es totalmente válido. Sin embargo,
+   al resolver el paquete desde el directorio del perfil, un **enlace simbólico** dentro de
+   `~/.dsh/profiles/web/node_modules/@deepseek-ai/` (que apunta a una copia antigua en `web/packages/`)
+   tiene prioridad sobre los archivos nuevos en `~/.dsh/profiles/node_modules/@deepseek-ai/` (el ámbito
+   compartido); la validación lee entonces el package.json antiguo y notifica `declares no dsh.bundle`.
+   Es habitual al actualizar desde una instalación manual antigua que copiaba fuentes en `web/packages/`.
+2. **El nombre del paquete se añadió a mano a `dsh.profile.bundles`** (edición manual del package.json del
+   perfil, resolviendo a una versión sin declaración `dsh.bundle`). El registro de bundles debe dejarse en
+   manos de `dsh plugin add`: no lo edite manualmente.
+
+**Soluciones**:
+
+1. Elimine los restos antiguos: borre o reemplace `~/.dsh/profiles/web/packages/dsh-client-ui-usage` y su
+   enlace simbólico en `~/.dsh/profiles/web/node_modules/@deepseek-ai/`, de modo que todas las rutas de
+   resolución apunten a la v0.4.0 (que declara `dsh.bundle`).
+2. Reinstale con el comando oficial (reconcilia el registro de bundles y las dependencias):
+
+   ```bash
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   ```
+
+3. Si antes montó el paquete con un `insert` escrito a mano en el `cordis.patch.yml` del perfil, conserve
+   **solo uno** de los dos mecanismos (prefiera el registro oficial de bundles y borre el insert manual)
+   para evitar conflictos de montaje duplicado.
+4. Reinicie `dsh web` y haga una recarga forzada del navegador.
+
+> También aplica al migrar de equipo: los scripts auxiliares que instalan fuentes antiguas en
+> `web/packages/` (p. ej. mediante enlaces simbólicos) deben limpiarse antes de actualizar este plugin,
+> o provocarán el problema de sombreado de resolución descrito arriba.
+
+### Autocomprobación rápida para otros problemas de instalación
+
+Simula localmente la validación de `bundles` al arrancar (comprueba que cada bundle declare `dsh.bundle`
+y que ningún paquete solo-cliente haya entrado en `bundles`):
+
+```bash
+node -e '
+const fs=require("fs"),path=require("path");
+const D=path.join(process.env.HOME,".dsh/profiles/web");
+const j=JSON.parse(fs.readFileSync(path.join(D,"package.json"),"utf8"));
+let ok=true;
+for(const n of j.dsh.profile.bundles){
+  const m=JSON.parse(fs.readFileSync(require.resolve(n+"/package.json",{paths:[D]}),"utf8"));
+  const has=!!(m.dsh&&m.dsh.bundle);
+  console.log((has?"✓":"✗")+" "+n+" "+m.version); if(!has)ok=false;
+}
+const bad=["@deepseek-ai/dsh-client-ui-usage","@deepseek-ai/dsh-client-ui-gitpush"]
+  .filter(n=>j.dsh.profile.bundles.includes(n));
+if(bad.length)console.log("✗ paquete solo-cliente en bundles:",bad),ok=false;
+console.log(ok?"✅ Comprobación superada":"❌ Comprobación fallida"); process.exit(ok?0:1);
+'
+```
+
 ## Verificación
 
 Después de desplegar, ejecuta:
