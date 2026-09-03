@@ -91,6 +91,67 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 
 > 从源码目录直接使用：`lib/client.js` 由服务器按文件直读，客户端改动刷新浏览器即生效；`lib/index.js`（host 端路由/存储）改动需要重启 `dsh web`。
 
+## 常见问题（故障排查）
+
+### 升级/安装后 `dsh web` 启动报 "declares no dsh.bundle"
+
+**现象**：重启 `dsh web` 报错退出：
+
+```
+profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its package.json
+```
+
+**原因**（按出现频率排序）：
+
+1. **机器上残留旧版 0.1.x（只声明 `dsh.client`、没有 `dsh.bundle`）挡住了新版解析**。
+   本包 v0.4.0 声明了 `dsh.bundle.patch`，注册进 bundles 完全合法；但 dsh 从 profile 目录解析包名时，
+   `~/.dsh/profiles/web/node_modules/@deepseek-ai/` 里的**软链**（指向 `web/packages/` 下旧版源码目录）
+   优先于 `~/.dsh/profiles/node_modules/@deepseek-ai/`（共享 scope）里的新文件——
+   校验读到的还是旧版 → 报 `declares no dsh.bundle`。常见于从旧版手动安装（源码复制进 `web/packages/`）升级的场景。
+2. **手动把包名写进 `dsh.profile.bundles`**（手动编辑 profile 的 package.json，且解析命中版本无 `dsh.bundle` 声明）。
+   bundle 注册请交给 `dsh plugin add` 自动完成，不要手改。
+
+**解决**：
+
+1. 清理旧版残留：删除或替换 `~/.dsh/profiles/web/packages/dsh-client-ui-usage`
+   及其在 `~/.dsh/profiles/web/node_modules/@deepseek-ai/` 下的软链，
+   确保任何解析路径命中的都是声明了 `dsh.bundle` 的 v0.4.0。
+2. 执行官方命令重装（会自动修正 bundle 注册与依赖）：
+
+   ```bash
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   ```
+
+3. 若此前用 profile 的 `cordis.patch.yml` 手写 insert 挂载过本包，与 bundles 注册**二选一**
+   （推荐保留官方 bundles 注册，删除手写 insert），避免重复挂载冲突。
+4. 重启 `dsh web`，浏览器硬刷新。
+
+> 换机/重装时同样注意：本仓库 [install-plugins.sh](install-plugins.sh) 一类的本地脚本通常把旧版源码装进
+> `web/packages/` 并用软链挂载，升级本插件前请先移除旧版，否则会触发上面的解析遮蔽问题。
+
+### 其他安装问题的快速自检
+
+若安装后仍有疑问，可在本机跑下面脚本模拟 dsh 启动时对 bundles 的校验
+（检查每个 bundle 是否声明 `dsh.bundle`、client 包是否误入 bundles）：
+
+```bash
+node -e '
+const fs=require("fs"),path=require("path");
+const D=path.join(process.env.HOME,".dsh/profiles/web");
+const j=JSON.parse(fs.readFileSync(path.join(D,"package.json"),"utf8"));
+let ok=true;
+for(const n of j.dsh.profile.bundles){
+  const m=JSON.parse(fs.readFileSync(require.resolve(n+"/package.json",{paths:[D]}),"utf8"));
+  const has=!!(m.dsh&&m.dsh.bundle);
+  console.log((has?"✓":"✗")+" "+n+" "+m.version); if(!has)ok=false;
+}
+const bad=["@deepseek-ai/dsh-client-ui-usage","@deepseek-ai/dsh-client-ui-gitpush"]
+  .filter(n=>j.dsh.profile.bundles.includes(n));
+if(bad.length)console.log("✗ client 包误入 bundles:",bad),ok=false;
+console.log(ok?"✅ 预检通过":"❌ 预检失败"); process.exit(ok?0:1);
+'
+```
+
 ## 验证
 
 部署后运行：
