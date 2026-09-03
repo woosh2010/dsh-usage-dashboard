@@ -53,7 +53,7 @@
 GitHub Release の tarball を 1 コマンドで直接インストールできます（動作確認済み）:
 
 ```bash
-dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
 ```
 
 パッケージは `dsh.bundle.patch` を宣言しているため、`dsh plugin` は `@deepseek-ai/dsh-client-ui-usage` を profile の `dsh.profile.bundles` リストに自動的に追加し、`ui-usage` エントリとしてマウントします。その後、`dsh web` を再起動してブラウザを更新してください。
@@ -66,7 +66,7 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 2. tgz があるディレクトリで実行します（パスの先頭に `./` または絶対パスを付けてください。ファイル名だけを書くと pnpm が npm パッケージ名として扱います）:
 
    ```bash
-   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 ### 方法 3: 手動インストール
@@ -75,7 +75,7 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 
    ```bash
    mkdir -p ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
-   tar -xzf deepseek-ai-dsh-client-ui-usage-0.4.0.tgz --strip-components=1 \
+   tar -xzf deepseek-ai-dsh-client-ui-usage.tgz --strip-components=1 \
      -C ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
    ```
 
@@ -122,7 +122,7 @@ profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its 
 2. 公式のワンライナーで再インストールする（bundle 登録と依存関係を自動修正）:
 
    ```bash
-   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 3. プロファイルの `cordis.patch.yml` に手書きの `insert` で本パッケージをマウントしていた場合は、
