@@ -53,7 +53,7 @@ Añade un **dock de facturación por hora punta/valle** debajo del cuadro de ent
 Un único comando instala directamente el tarball del GitHub Release (verificado en funcionamiento):
 
 ```bash
-dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
 ```
 
 El paquete declara `dsh.bundle.patch`; `dsh plugin` escribe automáticamente `@deepseek-ai/dsh-client-ui-usage` en la lista `dsh.profile.bundles` del profile y lo monta como la entrada `ui-usage`. Después reinicia `dsh web` y refresca el navegador.
@@ -66,7 +66,7 @@ El paquete declara `dsh.bundle.patch`; `dsh plugin` escribe automáticamente `@d
 2. Ejecuta en el directorio donde está el tgz (atención al `./` o a la ruta absoluta delante del nombre: si escribes solo el nombre del archivo, pnpm lo tratará como un nombre de paquete npm):
 
    ```bash
-   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 ### Opción 3: Instalación manual
@@ -75,7 +75,7 @@ El paquete declara `dsh.bundle.patch`; `dsh plugin` escribe automáticamente `@d
 
    ```bash
    mkdir -p ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
-   tar -xzf deepseek-ai-dsh-client-ui-usage-0.4.0.tgz --strip-components=1 \
+   tar -xzf deepseek-ai-dsh-client-ui-usage.tgz --strip-components=1 \
      -C ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
    ```
 
@@ -122,7 +122,7 @@ profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its 
 2. Reinstale con el comando oficial (reconcilia el registro de bundles y las dependencias):
 
    ```bash
-   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 3. Si antes montó el paquete con un `insert` escrito a mano en el `cordis.patch.yml` del perfil, conserve
