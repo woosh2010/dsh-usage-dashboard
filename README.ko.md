@@ -91,6 +91,69 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 
 > 소스 디렉터리에서 직접 사용하는 경우: `lib/client.js`는 서버가 파일을 직접 읽으므로 클라이언트 변경은 브라우저 새로고침만으로 즉시 반영됩니다. `lib/index.js`(host 측 라우팅/저장소) 변경은 `dsh web` 재시작이 필요합니다.
 
+## 자주 묻는 질문 (문제 해결)
+
+### 업그레이드/설치 후 `dsh web`이 "declares no dsh.bundle" 오류로 시작되지 않음
+
+**증상**: `dsh web`을 재시작하면 다음 오류와 함께 종료됩니다:
+
+```
+profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its package.json
+```
+
+**원인** (빈도순):
+
+1. **이전 0.1.x 설치본(`dsh.client`만 선언하고 `dsh.bundle`이 없음)이 새 버전을 가리고 있습니다.**
+   v0.4.0은 `dsh.bundle.patch`를 선언하므로 `bundles`에 등록하는 것은 전적으로 유효합니다. 그러나 dsh가
+   프로필 디렉터리에서 패키지를 확인할 때 `~/.dsh/profiles/web/node_modules/@deepseek-ai/` 안의
+   **심볼릭 링크**(`web/packages/` 아래의 이전 소스 복사본을 가리킴)가
+   `~/.dsh/profiles/node_modules/@deepseek-ai/`(공유 스코프)의 새 파일보다 우선하므로,
+   검증이 이전 package.json을 읽어 `declares no dsh.bundle`을 보고합니다.
+   소스를 `web/packages/`에 복사했던 이전 수동 설치에서 업그레이드할 때 흔합니다.
+2. **패키지 이름이 `dsh.profile.bundles`에 수동으로 추가됨** (프로필의 package.json을 직접 편집하여
+   `dsh.bundle` 선언이 없는 버전으로 확인됨). bundle 등록은 `dsh plugin add`에 맡기고 직접 편집하지 마세요.
+
+**해결 방법**:
+
+1. 이전 잔여물 제거: `~/.dsh/profiles/web/packages/dsh-client-ui-usage`와
+   `~/.dsh/profiles/web/node_modules/@deepseek-ai/` 아래의 심볼릭 링크를 삭제하거나 교체하여,
+   모든 확인 경로가 (`dsh.bundle`을 선언하는) v0.4.0에 도달하도록 합니다.
+2. 공식 한 줄 명령으로 재설치 (bundle 등록과 의존성을 자동 정리):
+
+   ```bash
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   ```
+
+3. 프로필의 `cordis.patch.yml`에 수기 `insert`로 이 패키지를 마운트했다면 두 메커니즘 중
+   **하나만** 유지하세요 (공식 bundles 등록을 권장하고 수기 insert는 삭제) — 이중 마운트 충돌을 방지합니다.
+4. `dsh web`을 재시작하고 브라우저를 강력 새로고침합니다.
+
+> 머신 이전 시에도 동일합니다: 이전 소스를 `web/packages/`에 설치하는 보조 스크립트(심볼릭 링크 경유 등)는
+> 이 플러그인을 업그레이드하기 전에 반드시 정리해야 합니다. 그렇지 않으면 위의 확인 가림 문제가 발생합니다.
+
+### 기타 설치 문제를 위한 빠른 자체 점검
+
+시작 시 `bundles` 검증을 로컬에서 시뮬레이션합니다 (각 bundle이 `dsh.bundle`을 선언하는지,
+클라이언트 전용 패키지가 `bundles`에 들어가지 않았는지 검사):
+
+```bash
+node -e '
+const fs=require("fs"),path=require("path");
+const D=path.join(process.env.HOME,".dsh/profiles/web");
+const j=JSON.parse(fs.readFileSync(path.join(D,"package.json"),"utf8"));
+let ok=true;
+for(const n of j.dsh.profile.bundles){
+  const m=JSON.parse(fs.readFileSync(require.resolve(n+"/package.json",{paths:[D]}),"utf8"));
+  const has=!!(m.dsh&&m.dsh.bundle);
+  console.log((has?"✓":"✗")+" "+n+" "+m.version); if(!has)ok=false;
+}
+const bad=["@deepseek-ai/dsh-client-ui-usage","@deepseek-ai/dsh-client-ui-gitpush"]
+  .filter(n=>j.dsh.profile.bundles.includes(n));
+if(bad.length)console.log("✗ 클라이언트 전용 패키지가 bundles에 포함됨:",bad),ok=false;
+console.log(ok?"✅ 점검 통과":"❌ 점검 실패"); process.exit(ok?0:1);
+'
+```
+
 ## 검증
 
 배포 후 실행:
