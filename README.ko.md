@@ -53,7 +53,7 @@
 GitHub Release에 있는 tarball을 한 줄의 명령으로 바로 설치합니다(실사용 확인됨):
 
 ```bash
-dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
 ```
 
 패키지가 `dsh.bundle.patch`를 선언하므로, `dsh plugin`이 자동으로 `@deepseek-ai/dsh-client-ui-usage`를 프로필의 `dsh.profile.bundles` 목록에 기록하고 `ui-usage` 항목으로 마운트합니다. 그런 다음 `dsh web`을 재시작하고 브라우저를 새로고침하세요.
@@ -66,7 +66,7 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 2. tgz가 있는 디렉터리에서 실행합니다(경로 앞의 `./` 또는 절대 경로에 주의하세요. 파일명만 쓰면 pnpm이 npm 패키지명으로 인식합니다):
 
    ```bash
-   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 ### 방법 3: 수동 설치
@@ -75,7 +75,7 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 
    ```bash
    mkdir -p ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
-   tar -xzf deepseek-ai-dsh-client-ui-usage-0.4.0.tgz --strip-components=1 \
+   tar -xzf deepseek-ai-dsh-client-ui-usage.tgz --strip-components=1 \
      -C ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
    ```
 
@@ -121,7 +121,7 @@ profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its 
 2. 공식 한 줄 명령으로 재설치 (bundle 등록과 의존성을 자동 정리):
 
    ```bash
-   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 3. 프로필의 `cordis.patch.yml`에 수기 `insert`로 이 패키지를 마운트했다면 두 메커니즘 중
