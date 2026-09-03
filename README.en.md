@@ -53,7 +53,7 @@ Adds a **peak/off-peak billing dock** below the input box of the [DeepSeek Harne
 One command to install the tarball from the GitHub Release directly (verified working):
 
 ```bash
-dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
 ```
 
 The package declares `dsh.bundle.patch`; `dsh plugin` automatically writes `@deepseek-ai/dsh-client-ui-usage` into the profile's `dsh.profile.bundles` list and mounts it as a `ui-usage` entry. Then restart `dsh web` and refresh the browser.
@@ -66,7 +66,7 @@ The package declares `dsh.bundle.patch`; `dsh plugin` automatically writes `@dee
 2. In the directory containing the tgz, run (note the `./` prefix or absolute path — writing just the file name makes pnpm treat it as an npm package name):
 
    ```bash
-   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 ### Method 3: Manual install
@@ -75,7 +75,7 @@ The package declares `dsh.bundle.patch`; `dsh plugin` automatically writes `@dee
 
    ```bash
    mkdir -p ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
-   tar -xzf deepseek-ai-dsh-client-ui-usage-0.4.0.tgz --strip-components=1 \
+   tar -xzf deepseek-ai-dsh-client-ui-usage.tgz --strip-components=1 \
      -C ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
    ```
 
@@ -122,7 +122,7 @@ profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its 
 2. Reinstall with the official one-liner (it reconciles bundle registration and dependencies):
 
    ```bash
-   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 3. If you previously mounted the package via a hand-written `insert` in the profile's `cordis.patch.yml`,
