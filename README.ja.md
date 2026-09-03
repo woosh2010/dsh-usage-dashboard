@@ -91,6 +91,72 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 
 > ソースディレクトリから直接使用する場合: `lib/client.js` はサーバーがファイルを直接読み込むため、クライアント側の変更はブラウザの更新で反映されます。`lib/index.js`（host 側のルーティング/ストレージ）の変更は `dsh web` の再起動が必要です。
 
+## よくある質問（トラブルシューティング）
+
+### アップグレード/インストール後に `dsh web` が "declares no dsh.bundle" で起動しない
+
+**症状**: `dsh web` の再起動時に以下のエラーで終了する:
+
+```
+profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its package.json
+```
+
+**原因**（頻度順）:
+
+1. **古い 0.1.x のインストール（`dsh.client` のみを宣言し、`dsh.bundle` を持たない）が新バージョンを覆い隠している。**
+   v0.4.0 は `dsh.bundle.patch` を宣言しているため、`bundles` への登録は完全に正当です。しかし dsh が
+   プロファイルディレクトリからパッケージを解決するとき、`~/.dsh/profiles/web/node_modules/@deepseek-ai/`
+   内の**シンボリックリンク**（`web/packages/` 配下の古いソースコピーを指す）が、
+   `~/.dsh/profiles/node_modules/@deepseek-ai/`（共有スコープ）内の新しいファイルより優先されるため、
+   検証は古い package.json を読んで `declares no dsh.bundle` を報告します。
+   ソースを `web/packages/` にコピーする旧来の手動インストールからアップグレードする場合に起こりがちです。
+2. **パッケージ名が手動で `dsh.profile.bundles` に追加された**（プロファイルの package.json を手編集し、
+   `dsh.bundle` 宣言のないバージョンに解決される）。bundle の登録は `dsh plugin add` に任せるべきで、
+   手動で編集しないでください。
+
+**対処法**:
+
+1. 古い残骸を削除する: `~/.dsh/profiles/web/packages/dsh-client-ui-usage` と
+   `~/.dsh/profiles/web/node_modules/@deepseek-ai/` 配下のシンボリックリンクを削除または置き換え、
+   すべての解決パスが（`dsh.bundle` を宣言する）v0.4.0 に届くようにします。
+2. 公式のワンライナーで再インストールする（bundle 登録と依存関係を自動修正）:
+
+   ```bash
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   ```
+
+3. プロファイルの `cordis.patch.yml` に手書きの `insert` で本パッケージをマウントしていた場合は、
+   どちらか**片方だけ**を残す（公式の bundles 登録を優先し、手書き insert は削除）ことで、
+   二重マウントの競合を防ぎます。
+4. `dsh web` を再起動し、ブラウザをハードリフレッシュします。
+
+> マシン移行時にも同様です: 古いソースを `web/packages/` にインストールする補助スクリプト
+> （シンボリックリンク経由など）は、本プラグインのアップグレード前に必ず掃除してください。
+> 掃除しないと上記の解決シャドーイング問題が発生します。
+
+### その他のインストール問題のクイック自己チェック
+
+起動時の `bundles` 検証をローカルでシミュレートします（各 bundle が `dsh.bundle` を宣言しているか、
+クライアント専用パッケージが `bundles` に紛れ込んでいないかを検査）:
+
+```bash
+node -e '
+const fs=require("fs"),path=require("path");
+const D=path.join(process.env.HOME,".dsh/profiles/web");
+const j=JSON.parse(fs.readFileSync(path.join(D,"package.json"),"utf8"));
+let ok=true;
+for(const n of j.dsh.profile.bundles){
+  const m=JSON.parse(fs.readFileSync(require.resolve(n+"/package.json",{paths:[D]}),"utf8"));
+  const has=!!(m.dsh&&m.dsh.bundle);
+  console.log((has?"✓":"✗")+" "+n+" "+m.version); if(!has)ok=false;
+}
+const bad=["@deepseek-ai/dsh-client-ui-usage","@deepseek-ai/dsh-client-ui-gitpush"]
+  .filter(n=>j.dsh.profile.bundles.includes(n));
+if(bad.length)console.log("✗ クライアント専用パッケージが bundles に混入:",bad),ok=false;
+console.log(ok?"✅ チェック成功":"❌ チェック失敗"); process.exit(ok?0:1);
+'
+```
+
 ## 検証
 
 デプロイ後に実行します:
