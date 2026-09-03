@@ -91,6 +91,72 @@ Le paquet déclare `dsh.bundle.patch` ; `dsh plugin` ajoute automatiquement `@de
 
 > Utilisation directe depuis le répertoire source : `lib/client.js` est lu directement par le serveur, les modifications côté client prennent effet après un rafraîchissement du navigateur ; les modifications de `lib/index.js` (routage/stockage côté hôte) nécessitent de redémarrer `dsh web`.
 
+## Questions fréquentes (dépannage)
+
+### `dsh web` ne démarre pas avec l'erreur « declares no dsh.bundle » après mise à jour/installation
+
+**Symptôme** : au redémarrage, `dsh web` échoue avec :
+
+```
+profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its package.json
+```
+
+**Causes** (par fréquence) :
+
+1. **Une ancienne installation 0.1.x (déclarant uniquement `dsh.client`, sans `dsh.bundle`) masque la nouvelle version.**
+   La v0.4.0 déclare `dsh.bundle.patch`, donc son enregistrement dans `bundles` est parfaitement valide.
+   Mais lorsque dsh résout le paquet depuis le répertoire du profil, un **lien symbolique** dans
+   `~/.dsh/profiles/web/node_modules/@deepseek-ai/` (pointant vers une vieille copie des sources dans `web/packages/`)
+   a priorité sur les nouveaux fichiers dans `~/.dsh/profiles/node_modules/@deepseek-ai/` (le scope partagé) ;
+   la validation lit donc l'ancien package.json et signale `declares no dsh.bundle`.
+   Fréquent lors d'une mise à jour depuis une ancienne installation manuelle qui copiait les sources dans `web/packages/`.
+2. **Le nom du paquet a été ajouté à la main à `dsh.profile.bundles`** (édition manuelle du package.json
+   du profil, résolvant vers une version sans déclaration `dsh.bundle`). L'enregistrement des bundles doit
+   être laissé à `dsh plugin add` — ne le modifiez pas à la main.
+
+**Corrections** :
+
+1. Supprimez les restes anciens : supprimez ou remplacez `~/.dsh/profiles/web/packages/dsh-client-ui-usage`
+   et son lien symbolique sous `~/.dsh/profiles/web/node_modules/@deepseek-ai/`, afin que tous les chemins
+   de résolution aboutissent à la v0.4.0 (qui déclare `dsh.bundle`).
+2. Réinstallez avec la commande officielle (elle réconcilie l'enregistrement des bundles et les dépendances) :
+
+   ```bash
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   ```
+
+3. Si vous aviez monté le paquet via un `insert` écrit à la main dans le `cordis.patch.yml` du profil,
+   ne gardez **qu'un seul** des deux mécanismes (privilégiez l'enregistrement officiel des bundles et
+   supprimez l'insert manuel) pour éviter les conflits de double montage.
+4. Redémarrez `dsh web` et faites un rechargement forcé du navigateur.
+
+> S'applique aussi lors d'un changement de machine : les scripts d'aide qui installent d'anciennes
+> sources dans `web/packages/` (p. ex. via des liens symboliques) doivent être nettoyés avant de mettre à
+> jour ce plugin, sinon ils déclenchent le problème de masquage de résolution décrit ci-dessus.
+
+### Auto-vérification rapide pour d'autres problèmes d'installation
+
+Simule localement la validation des `bundles` au démarrage (vérifie que chaque bundle déclare
+`dsh.bundle` et qu'aucun paquet client-seul ne s'est glissé dans `bundles`) :
+
+```bash
+node -e '
+const fs=require("fs"),path=require("path");
+const D=path.join(process.env.HOME,".dsh/profiles/web");
+const j=JSON.parse(fs.readFileSync(path.join(D,"package.json"),"utf8"));
+let ok=true;
+for(const n of j.dsh.profile.bundles){
+  const m=JSON.parse(fs.readFileSync(require.resolve(n+"/package.json",{paths:[D]}),"utf8"));
+  const has=!!(m.dsh&&m.dsh.bundle);
+  console.log((has?"✓":"✗")+" "+n+" "+m.version); if(!has)ok=false;
+}
+const bad=["@deepseek-ai/dsh-client-ui-usage","@deepseek-ai/dsh-client-ui-gitpush"]
+  .filter(n=>j.dsh.profile.bundles.includes(n));
+if(bad.length)console.log("✗ paquet client-seul dans bundles :",bad),ok=false;
+console.log(ok?"✅ Vérification réussie":"❌ Vérification échouée"); process.exit(ok?0:1);
+'
+```
+
 ## Vérification
 
 Après le déploiement, exécutez :
