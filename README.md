@@ -53,7 +53,7 @@
 一条命令，直接安装 GitHub Release 里的 tarball（实测可用）：
 
 ```bash
-dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
 ```
 
 包声明了 `dsh.bundle.patch`，`dsh plugin` 会自动把 `@deepseek-ai/dsh-client-ui-usage` 写进 profile 的 `dsh.profile.bundles` 列表并挂载为 `ui-usage` 条目。然后重启 `dsh web` 并刷新浏览器。
@@ -66,7 +66,7 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 2. 在 tgz 所在目录执行（注意路径前的 `./` 或绝对路径，直接写文件名会被 pnpm 当成 npm 包名）：
 
    ```bash
-   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add ./deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 ### 方式三：手动安装
@@ -75,7 +75,7 @@ dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/re
 
    ```bash
    mkdir -p ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
-   tar -xzf deepseek-ai-dsh-client-ui-usage-0.4.0.tgz --strip-components=1 \
+   tar -xzf deepseek-ai-dsh-client-ui-usage.tgz --strip-components=1 \
      -C ~/.dsh/profiles/node_modules/@deepseek-ai/dsh-client-ui-usage
    ```
 
@@ -119,7 +119,7 @@ profile bundle "@deepseek-ai/dsh-client-ui-usage" declares no dsh.bundle in its 
 2. 执行官方命令重装（会自动修正 bundle 注册与依赖）：
 
    ```bash
-   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/download/v0.4.0/deepseek-ai-dsh-client-ui-usage-0.4.0.tgz
+   dsh plugin --profile web add https://github.com/woosh2010/dsh-usage-dashboard/releases/latest/download/deepseek-ai-dsh-client-ui-usage.tgz
    ```
 
 3. 若此前用 profile 的 `cordis.patch.yml` 手写 insert 挂载过本包，与 bundles 注册**二选一**
